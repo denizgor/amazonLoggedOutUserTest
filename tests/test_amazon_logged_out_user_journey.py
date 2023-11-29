@@ -12,18 +12,19 @@ class TestAmazonLoggedOutUserJourney(BaseTest):
     def test_amazon_logged_out_user(self):
         home_page = HomePage(self.driver)
         home_page.click_reject_cookies_link()
+
+        #Search for a product
         home_page.enter_search_term(self.search_keys)
-        home_page.click_search_icon()
-
-
-    #Click the search bar and search for a product
-
+        search_results_page = home_page.click_search_icon()
 
     #Assert that you are in the serch results page for the product searched
+        self.assertIn(self.search_keys, self.driver.title)
+        self.assertTrue(self.driver.find_element(By.CLASS_NAME, "a-color-state").text == '"{}"'.format(self.search_keys))
 
 
     #click on a product and go to product page
 
+    print("TEST")
     # assert that product name is the same with the clicked product name
 
     #assert that the product card has: name, brand, star rating and icon, comments, and price
@@ -41,3 +42,5 @@ class TestAmazonLoggedOutUserJourney(BaseTest):
     #delete the product from the cart
 
     #check that the prdoduct is removed from the cart
+
+    print("Finished Test")
