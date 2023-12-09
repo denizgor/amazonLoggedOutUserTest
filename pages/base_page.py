@@ -3,6 +3,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 
 
+
 class BasePage(object):
     def __init__(self, driver):
         self.driver = driver
@@ -32,3 +33,6 @@ class BasePage(object):
 
     def search_element_in_dom(self, locator):
         return self.wait.until(EC.presence_of_element_located(locator))
+
+    def get_element_text(self, *locator):
+        return self.find_element(locator).text

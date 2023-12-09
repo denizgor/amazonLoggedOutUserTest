@@ -1,5 +1,6 @@
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
+from pages.search_results_page import SearchResultsPage
 
 class HomePage(BasePage):
 
@@ -21,4 +22,6 @@ class HomePage(BasePage):
 
     def click_search_icon(self):
         self.click_element(*self.SEARCH_ICON)
+
+        return SearchResultsPage(self.driver)
 
