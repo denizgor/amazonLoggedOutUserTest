@@ -25,8 +25,6 @@ class BasePage(object):
     def hover_element(self, *locator):
         self.actions.move_to_element(self.find_element(*locator)).perform()
 
-    def get_text(self, locator):
-        return self.find_element(*locator).text
 
     def send_text(self, text, *locator):
         self.driver.find_element(*locator).send_keys(text)
@@ -34,5 +32,25 @@ class BasePage(object):
     def search_element_in_dom(self, locator):
         return self.wait.until(EC.presence_of_element_located(locator))
 
-    def get_element_text(self, *locator):
-        return self.find_element(locator).text
+    def get_element_text(self, *locator, index=None):
+        if index is not None:
+            return self.find_elements(index, *locator).text
+        else:
+            return self.find_element(*locator).text
+
+    def get_product_price(self, *locator):
+        raw_price = self.driver.find_element(*locator).text
+
+        # Split the data based on whitespace and newline characters
+        price_tokens = raw_price.split()
+
+        # Join the numeric tokens to form a numeric string
+        numeric_string = ''.join(token for token in price_tokens if token.replace('.', '').isdigit())
+
+        # Convert the numeric string to a float
+        if numeric_string:
+            extracted_price = float(numeric_string.replace(',', '.'))
+            return extracted_price
+        else:
+            print("Price not found in the given data.")
+
