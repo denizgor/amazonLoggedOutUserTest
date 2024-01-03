@@ -5,7 +5,8 @@ from pages.home_page import HomePage
 
 
 class TestAmazonLoggedOutUserJourney(BaseTest):
-    search_keys = "bluetooth kulaklık"
+    PRODUCT_BRAND = (By.ID, "bylineInfo")
+    search_keys = "akıllı telefon"
 
     # Go to mainpage and click "reject cookies"
     def test_amazon_logged_out_user(self):
@@ -16,28 +17,49 @@ class TestAmazonLoggedOutUserJourney(BaseTest):
         home_page.enter_search_term(self.search_keys)
         search_results_page = home_page.click_search_icon()
 
-        # Assert that you are in the serch results page for the product searched
+        # Assert that you are in the search results page for the product searched
         self.assertIn(self.search_keys, self.driver.title)
         self.assertTrue(
             self.driver.find_element(By.CLASS_NAME, "a-color-state").text == '"{}"'.format(self.search_keys))
 
-        # click on a product and go to product page
+        # pick a random product & click on it and go to product page
         picked_element_text = search_results_page.get_picked_element_text()
         self.assertTrue(picked_element_text != "")
-        search_results_page.click_picked_product()
+
+        product_page = search_results_page.click_picked_product()
+        clicked_product_title = product_page.get_product_title()
+        print("Picked Element Text: ", picked_element_text)
+        print("Clicked Product Title: ", clicked_product_title)
 
         # assert that product name is the same with the clicked product name
+        self.assertEqual(picked_element_text, clicked_product_title, "Error! This isn't the picked product!")
+
+        # assert that the product card has: name, brand, star rating and icon, comments, and price
+        self.assertTrue(EC.presence_of_element_located(product_page.PRODUCT_TITLE),
+                        "Error! Product name is not present.")
+        self.assertTrue(EC.presence_of_element_located(product_page.PRODUCT_BRAND),
+                        "Error! Product brand is not present.")
+        self.assertTrue(EC.presence_of_element_located(product_page.PRODUCT_STAR_POINTS),
+                        "Error! Product star points not present.")
+        self.assertTrue(EC.presence_of_element_located(product_page.PRODUCT_PRICE),
+                        "Error! Product price is not present.")
+        self.assertTrue(EC.presence_of_element_located(product_page.PRODUCT_COMMENTS),
+                        "Error! Comments are not present.")
+
+        # store product name and price in a variable
+        product_price = product_page.extract_product_price()
+        print(product_price)
 
 
-    # assert that the product card has: name, brand, star rating and icon, comments, and price
-    print("Test")
+        # add product to the cart and check that minicart updated
+        product_page.click_add_to_cart_button()
+        minicart_item_count = product_page.get_minicart_count()
+        self.assertTrue(minicart_item_count > 0, "Error! No product added to the cart.")
 
-    # store product name and price in a variable
+        # click on the cart icon and go to cart
+        product_page.click_go_to_cart_button()
 
-    # add product to the cart and check that minicart updated
-
-    # click on the cart icon and go to cart
-
+        print("Test")
     # check that product is in the cart
 
     # check that product price is the same with the price on the product page
